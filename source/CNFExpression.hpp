@@ -1,18 +1,11 @@
 #pragma once
 
-#include <vector>
+#include <istream>
+#include <forward_list>
 
 class CNFExpression {
-private:
-    bool _isValid;
 public:
-    struct Variable {
-        char name;
-        bool inverted;
-    };
-    std::vector<std::vector<Variable>> disjunctions;
-
+    std::forward_list<std::forward_list<int>> disjunctions;
+    CNFExpression(std::istream& in);
     CNFExpression();
-    CNFExpression(const std::string& string);
-    bool isValid() { return _isValid; }
 };

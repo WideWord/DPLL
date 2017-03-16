@@ -1,52 +1,45 @@
 #include "CNFExpression.hpp"
+#include <istream>
 #include <sstream>
 
-CNFExpression::CNFExpression(const std::string& string) {
-    std::stringstream in(string);
+CNFExpression::CNFExpression(std::istream& in) {
 
-    disjunctions.emplace_back();
-
-    bool inverted = false;
+    disjunctions.emplace_front();
 
     while (true) {
-        char inp;
-        in >> inp;
+        int ch;
+        ch = in.get();
+
         if (in.eof()) break;
 
-        if (inp == ' ' || inp == '\n') {
-            continue;
-        } else if (inp == '*') {
+        if (ch == 'p' || ch == 'c') {
+            do {
+                ch = in.get();
+                if (in.eof()) break;
+            } while (ch != '\n');
+        } else if ((ch >= '0' && ch <= '9') || ch == '-') {
+            std::stringstream ss;
+            do {
+                ss << (char)ch;
+                ch = in.get();
+                if (in.eof()) break;
+            } while (ch >= '0' && ch <= '9');
 
-            if (inverted || disjunctions.back().empty()) {
-                _isValid = false;
-                return;
+            int var;
+            ss >> var;
+            if (var == 0) {
+                disjunctions.emplace_front();
+            } else {
+                disjunctions.front().push_front(var);
             }
-            disjunctions.emplace_back();
-        } else if (inp == '!') {
-            if (inverted) {
-                _isValid = false;
-                return;
-            }
-            inverted = true;
-        } else if (inp >= 'a' && inp<= 'z') {
-            Variable var;
-            var.name = inp;
-            var.inverted = inverted;
-            inverted = false;
-            disjunctions.back().push_back(var);
-        } else {
-            _isValid = false;
-            return;
         }
+
     }
 
-    if (disjunctions.back().empty()) {
-        _isValid = false;
-    } else {
-        _isValid = true;
+    if (disjunctions.front().empty()) {
+        disjunctions.pop_front();
     }
 }
 
-CNFExpression::CNFExpression() {
-    _isValid = true;
-}
+CNFExpression::CNFExpression() {}
+

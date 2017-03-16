@@ -1,103 +1,57 @@
 #include "DPLLTester.hpp"
 #include "CNFExpression.hpp"
+#include <algorithm>
 
-bool DPLLTestSub(const CNFExpression& cnf, char v, bool value) {
+bool SubDPLLTest(const CNFExpression& baseExpression, int var) {
 
+    CNFExpression expression = baseExpression;
+    auto& disjunctions = expression.disjunctions;
 
-    CNFExpression copy = cnf;
-
-    for (auto it = copy.disjunctions.begin(); it != copy.disjunctions.end();) {
-        bool itIncremented = false;
-        for (auto it2 = it->begin(); it2 != it->end();) {
-            if (it2->name == v) {
-                if (it2->inverted != value) {
-                    it = copy.disjunctions.erase(it);
-                    itIncremented = true;
-                    break;
-                } else {
-                    if (it->size() == 1) {
-                        return false;
-                    } else {
-                        it2 = it->erase(it2);
-                    }
-                }
-            } else {
-                ++it2;
+    auto prevIt = disjunctions.before_begin();
+    for (auto it = disjunctions.begin(), itend = disjunctions.end(); it != itend; ++it) {
+        auto& disjunction = *it;
+        if (std::find(it->begin(), it->end(), var) != it->end()) {
+            disjunctions.erase_after(prevIt);
+        } else {
+            it->remove(-var);
+            if (it->empty()) {
+                return false;
             }
-        }
-        if (!itIncremented) {
-            ++it;
+            prevIt = it;
         }
     }
 
-    if (copy.disjunctions.empty()) return true;
-    else return DPLLTest(copy);
+    if (disjunctions.empty()) {
+        return true;
+    }
+
+    return DPLLTest(expression);
 }
 
-bool DPLLTest(CNFExpression cnf) {
-
-
-
-    char v = 0;
-    bool skipPositive = false;
-    bool skipNegative = false;
-
-
-    bool positiveVars['z' - 'a' + 1];
-    bool negativeVars['z' - 'a' + 1];
-
-    for (int i = 0; i < 'z' - 'a' + 1; ++i) {
-        positiveVars[i] = false;
-        negativeVars[i] = false;
-    }
-
+int DPLLUnitPropagate(const CNFExpression& cnf) {
     for (auto& d : cnf.disjunctions) {
-        if (d.empty()) return false;
-        for (auto& vr : d) {
-            if (vr.inverted) {
-                negativeVars[vr.name - 'a'] = true;
-            } else {
-                positiveVars[vr.name - 'a'] = true;
-            }
+        auto it = d.begin();
+        ++it;
+        if (it == d.end()) {
+            return d.front();
+        }
+    }
+    return 0;
+}
+
+bool DPLLTest(const CNFExpression& cnf) {
+
+    int var = DPLLUnitPropagate(cnf);
+    if (var != 0) {
+        return SubDPLLTest(cnf, var);
+    } else {
+        var = cnf.disjunctions.front().front();
+        if (SubDPLLTest(cnf, var)) {
+            return true;
+        } else {
+            return SubDPLLTest(cnf, -var);
         }
     }
 
-    for (char ch = 'a'; ch <= 'z'; ++ch) {
-        if (positiveVars[ch - 'a'] != negativeVars[ch - 'a']) {
-            for (auto it = cnf.disjunctions.begin(); it != cnf.disjunctions.end();) {
-                bool itIncremented = false;
-                for (auto& var : *it) {
-                    if (var.name == ch) {
-                        it = cnf.disjunctions.erase(it);
-                        itIncremented = true;
-                        break;
-                    }
-                }
-                if (!itIncremented) {
-                    ++it;
-                }
-            }
-        }
-    }
 
-    if (cnf.disjunctions.empty()) return true;
-
-    for (auto& d : cnf.disjunctions) {
-        if (d.size() == 1) {
-            v = d.front().name;
-            skipPositive = d.front().inverted;
-            skipNegative = !skipPositive;
-        }
-    }
-
-    if (v == 0) v = cnf.disjunctions.front().front().name;
-
-    if (!skipPositive) {
-        if (DPLLTestSub(cnf, v, true)) return true;
-    }
-    if (!skipNegative) {
-        if (DPLLTestSub(cnf, v, false)) return true;
-    }
-
-    return false;
 }
