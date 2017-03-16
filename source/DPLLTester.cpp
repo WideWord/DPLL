@@ -7,17 +7,16 @@ bool SubDPLLTest(const CNFExpression& baseExpression, int var) {
     CNFExpression expression = baseExpression;
     auto& disjunctions = expression.disjunctions;
 
-    auto prevIt = disjunctions.before_begin();
-    for (auto it = disjunctions.begin(), itend = disjunctions.end(); it != itend; ++it) {
+    for (auto it = disjunctions.begin(), itend = disjunctions.end(); it != itend;) {
         auto& disjunction = *it;
         if (std::find(it->begin(), it->end(), var) != it->end()) {
-            disjunctions.erase_after(prevIt);
+            it = disjunctions.erase(it);
         } else {
             it->remove(-var);
             if (it->empty()) {
                 return false;
             }
-            prevIt = it;
+            ++it;
         }
     }
 
@@ -30,9 +29,7 @@ bool SubDPLLTest(const CNFExpression& baseExpression, int var) {
 
 int DPLLUnitPropagate(const CNFExpression& cnf) {
     for (auto& d : cnf.disjunctions) {
-        auto it = d.begin();
-        ++it;
-        if (it == d.end()) {
+        if (d.size() == 1) {
             return d.front();
         }
     }

@@ -28,16 +28,16 @@ CNFExpression::CNFExpression(std::istream& in) {
             int var;
             ss >> var;
             if (var == 0) {
-                disjunctions.emplace_front();
+                disjunctions.emplace_back();
             } else {
-                disjunctions.front().push_front(var);
+                disjunctions.back().push_back(var);
             }
         }
 
     }
 
-    if (disjunctions.front().empty()) {
-        disjunctions.pop_front();
+    if (disjunctions.back().empty()) {
+        disjunctions.pop_back();
     }
 }
 
