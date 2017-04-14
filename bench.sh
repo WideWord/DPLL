@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
-for f in fixtures/aim-100-1-*.cnf
+for f in fixtures/aim-*.cnf
 do
 	if [[ $f == *"yes"* ]]; then
-		if [[ $(./dpllk $f) == *"UNSATISFIABLE"* ]]; then
+		if [[ $(./dpll $f) == *"UNSATISFIABLE"* ]]; then
 			echo "NO"
 		else
 			echo "YES"
 		fi
 	else
-		if [[ $(./dpllk $f) == *"UNSATISFIABLE"* ]]; then
+		if [[ $(./dpll $f) == *"UNSATISFIABLE"* ]]; then
 			echo "YES"
 		else
 			echo "NO"
