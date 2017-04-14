@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
     auto cnf = CNFExpression(in);
 
     bool t = DPLLTest(&cnf);
-    std::cout << (t ? "SATISFIABLE" : "UNSATISFIABLE") << std::endl;
+    std::cout << (t ? "SATISFIABLE" : "UNSATISFIABLE");
 
     return 0;
 }

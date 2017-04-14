@@ -1,9 +1,19 @@
 #!/usr/bin/env bash
 
-set -c
-
-for f in fixtures/*.cnf
+for f in fixtures/aim-100-1-*.cnf
 do
-	echo "Testing $f"
-	./dpll $f
+	if [[ $f == *"yes"* ]]; then
+		if [[ $(./dpllk $f) == *"UNSATISFIABLE"* ]]; then
+			echo "NO"
+		else
+			echo "YES"
+		fi
+	else
+		if [[ $(./dpllk $f) == *"UNSATISFIABLE"* ]]; then
+			echo "YES"
+		else
+			echo "NO"
+		fi
+	fi
+
 done

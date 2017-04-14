@@ -5,9 +5,7 @@ c          and Yuichi Asahiro
 c
 c DESCRIPTION: Artifical instances from generator by source.  Generators
 c              and more information in sat/contributed/iwama.
-c
 c NOTE: Not Satisfiable
-c
 p cnf 100 160
 16 30 95 0
 -16 30 95 0

@@ -8,41 +8,37 @@
 }
 
 void Disjunction::add(int var) {
-    if (var > 0) {
-        ids.insert(var);
-    } else {
-        nots.insert(-var);
-    }
+    vars.insert(var);
 }
 
 void Disjunction::remove(int var) {
-    if (var > 0) {
-        ids.erase(var);
-    } else {
-        nots.erase(-var);
-    }
+    vars.erase(var);
 }
 
 bool Disjunction::has(int var) {
-    if (var > 0) {
-        return ids.find(var) != ids.end();
-    } else {
-        return nots.find(-var) != nots.end();
-    }
+    return vars.find(var) != vars.end();
+}
+
+bool Disjunction::empty() {
+    return vars.empty();
+}
+
+int Disjunction::size() {
+    return vars.size();
+}
+
+int Disjunction::first() {
+    return *(vars.begin());
 }
 
 int CNFExpression::getVarToTest() {
-    for (auto& d : disjunctions) {
-        if (!d.active) {
+    for (int i=0 ; i<disjunctions.size() ; i++) {
+        if (!disjunctions[i].active) {
             continue;
         }
 
-        if (!d.ids.empty()) {
-            return *d.ids.begin();
-        }
-
-        if (!d.nots.empty()) {
-            return -(*d.nots.begin());
+        if (!disjunctions[i].vars.empty()) {
+            return *disjunctions[i].vars.begin();
         }
     }
 

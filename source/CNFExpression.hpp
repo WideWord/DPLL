@@ -6,13 +6,15 @@
 
 class Disjunction {
 public:
-	std::unordered_set<uint> ids;
-	std::unordered_set<uint> nots;
+	std::unordered_set<int> vars;
 	bool active;
 
 	void add(int);
 	void remove(int);
 	bool has(int);
+	bool empty();
+	int size();
+	int first();
 
 	Disjunction();	
 };
