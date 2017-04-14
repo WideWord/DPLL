@@ -2,4 +2,4 @@
 
 class CNFExpression;
 
-bool DPLLTest(const CNFExpression& cnf);
+bool DPLLTest(CNFExpression *cnf);
