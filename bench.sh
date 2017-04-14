@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-for f in fixtures/aim-*.cnf
+for f in fixtures/aim-{100,50}*.cnf
 do
 	if [[ $f == *"yes"* ]]; then
 		if [[ $(./dpll $f) == *"UNSATISFIABLE"* ]]; then

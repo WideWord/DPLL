@@ -24,6 +24,7 @@ public:
     std::vector<Disjunction> disjunctions;
 
     int getVarToTest();
+    int getPureVar();
 
     CNFExpression(std::istream& in);
     CNFExpression();

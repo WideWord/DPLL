@@ -45,6 +45,27 @@ int CNFExpression::getVarToTest() {
     return 0;
 }
 
+int CNFExpression::getPureVar() {
+    std::unordered_set<int> distinctVars;
+
+    for (int i=0 ; i<disjunctions.size() ; i++) {
+        if (!disjunctions[i].active) {
+            continue;
+        }
+        for (auto& f: disjunctions[i].vars) {
+            distinctVars.insert(f);
+        }
+    }
+
+    for (auto& x: distinctVars) {
+        if (distinctVars.find(-x) == distinctVars.end()) {
+            return x;
+        }
+    }
+
+    return 0;
+}
+
 CNFExpression::CNFExpression(std::istream& in) {
     uint currentDisjunction = 0;
 
