@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 void sigInt(int s){
-    std::cout << "UNKNOWN";
+    std::cout << "UNKNOWN\n";
     exit(0);
 }
 
@@ -30,8 +30,8 @@ int main(int argc, char** argv) {
 
     auto cnf = CNFExpression(in);
 
-    bool t = DPLLTest(&cnf);
-    std::cout << (t ? "SATISFIABLE" : "UNSATISFIABLE");
+    bool t = DPLLTest(cnf);
+    std::cout << (t ? "SATISFIABLE\n" : "UNSATISFIABLE\n");
 
     return 0;
 }
