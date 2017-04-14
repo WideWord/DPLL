@@ -45,26 +45,46 @@ int CNFExpression::getVarToTest() {
     return 0;
 }
 
+const ushort HAS_NONE = 0;
+const ushort HAS_ID = 1;
+const ushort HAS_NOT = 2;
+const ushort HAS_BOTH = HAS_NOT | HAS_ID;
+
+
+ushort *varsPurity;
+int varsCount;
+
 int CNFExpression::getPureVar() {
-    std::unordered_set<int> distinctVars;
+    for (uint i=1 ; i<=varsCount ; i++) {
+        varsPurity[i] = HAS_NONE;
+    }
 
     for (int i=0 ; i<disjunctions.size() ; i++) {
         if (!disjunctions[i].active) {
             continue;
         }
         for (auto& f: disjunctions[i].vars) {
-            distinctVars.insert(f);
+            if (f>0) {
+                varsPurity[f] = varsPurity[f] | HAS_ID;
+            } else {
+                varsPurity[-f] = varsPurity[-f] | HAS_NOT;
+            }
         }
     }
 
-    for (auto& x: distinctVars) {
-        if (distinctVars.find(-x) == distinctVars.end()) {
-            return x;
+    for (uint i=1 ; i<=varsCount ; i++) {
+        if (varsPurity[i] == HAS_ID) {
+            return i;
+        }
+
+        if (varsPurity[i] == HAS_NOT) {
+            return -i;
         }
     }
 
     return 0;
 }
+
 
 CNFExpression::CNFExpression(std::istream& in) {
     uint currentDisjunction = 0;
@@ -78,9 +98,10 @@ CNFExpression::CNFExpression(std::istream& in) {
 
         if (ch == 'p') {
             std::string cnf;
-            int vars, disjunctionsCount;
+            int disjunctionsCount;
 
-            in >> cnf >> vars >> disjunctionsCount;
+            in >> cnf >> varsCount >> disjunctionsCount;
+            varsPurity = new ushort[varsCount+1];
             
             disjunctions.reserve(disjunctionsCount); 
             for (uint i=0 ; i<disjunctionsCount ; i++) {
