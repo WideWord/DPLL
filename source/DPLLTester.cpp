@@ -13,49 +13,38 @@ void restore(CNFExpression &expr, int var) {
         int idx = disjunctionsToActivate.top();
         disjunctionsToActivate.pop();
         if (idx == -1) break;
-        expr.disjunctions[idx].active = true;
+        expr.activate(idx);
     }
 
     while(true) {
         int idx = disjunctionsToAddNotVar.top();
         disjunctionsToAddNotVar.pop();
         if (idx == -1) break;
-        expr.disjunctions[idx].add(-var);
+        expr.add(idx, -var);
     }
 }
 
 bool SubDPLLTest(CNFExpression &expr, int var) {
-    int unactiveCount = 0;
-
     disjunctionsToActivate.push(-1);
     disjunctionsToAddNotVar.push(-1);
+    
+    for (const auto& di : expr.getDisjunctionIndexesByVar(-var)) {
+        expr.remove(di, -var);
 
-    for (uint i=0 ; i<expr.disjunctions.size() ; i++) {
-        auto& d = expr.disjunctions[i];
+        disjunctionsToAddNotVar.push(di);
 
-        if (!d.active) {
-            unactiveCount++;
-            continue;
-        }
-
-        if (d.has(var)) {
-            d.active = false;
-            disjunctionsToActivate.push(i);
-            unactiveCount++;
-        } else if (d.has(-var)){
-            d.remove(-var);
-
-            disjunctionsToAddNotVar.push(i);
-
-            if (d.empty()) {
-                restore(expr, var);
-                return false;
-            }
-        }
+        if (expr.disjunctions[di].empty()) {
+            restore(expr, var);
+            return false;
+        }  
     }
 
+    for (const auto& di : expr.getDisjunctionIndexesByVar(var)) {
+        expr.deactivate(di);
+        disjunctionsToActivate.push(di);    
+    }
 
-    if (unactiveCount == expr.disjunctions.size()) {
+    if (expr.activeCount == 0) {
         return true;
     }
 
