@@ -31,21 +31,23 @@ bool SubDPLLTest(CNFExpression &expr, int var) {
     disjunctionsToAddNotVar.push(-1);
 
     for (uint i=0 ; i<expr.disjunctions.size() ; i++) {
-        if (!expr.disjunctions[i].active) {
+        auto& d = expr.disjunctions[i];
+
+        if (!d.active) {
             unactiveCount++;
             continue;
         }
 
-        if (expr.disjunctions[i].has(var)) {
-            expr.disjunctions[i].active = false;
+        if (d.has(var)) {
+            d.active = false;
             disjunctionsToActivate.push(i);
             unactiveCount++;
-        } else if (expr.disjunctions[i].has(-var)){
-            expr.disjunctions[i].remove(-var);
+        } else if (d.has(-var)){
+            d.remove(-var);
 
             disjunctionsToAddNotVar.push(i);
 
-            if (expr.disjunctions[i].empty()) {
+            if (d.empty()) {
                 restore(expr, var);
                 return false;
             }
@@ -68,21 +70,8 @@ bool SubDPLLTest(CNFExpression &expr, int var) {
     return false;
 }
 
-int DPLLUnitPropagate(CNFExpression &cnf) {
-    for (auto& d : cnf.disjunctions) {
-        if (!d.active) {
-            continue;
-        }
-
-        if (d.size() == 1) {
-            return d.first();
-        }
-    }
-    return 0;
-}
-
 bool DPLLTest(CNFExpression &cnf) {
-    int var = DPLLUnitPropagate(cnf);
+    int var = cnf.getUnitPropagateVar();
 
     if (var == 0) {
         var = cnf.getPureVar();

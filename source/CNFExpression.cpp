@@ -93,6 +93,19 @@ int CNFExpression::getPureVar() {
     return 0;
 }
 
+int CNFExpression::getUnitPropagateVar() {
+    for (auto& d : disjunctions) {
+        if (!d.active) {
+            continue;
+        }
+
+        if (d.size() == 1) {
+            return d.first();
+        }
+    }
+    
+    return 0;
+}
 
 CNFExpression::CNFExpression(std::istream& in) {
     uint currentDisjunction = 0;

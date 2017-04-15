@@ -26,6 +26,7 @@ public:
 
     int getVarToTest();
     int getPureVar();
+    int getUnitPropagateVar();
 
     CNFExpression(std::istream& in);
     CNFExpression();
