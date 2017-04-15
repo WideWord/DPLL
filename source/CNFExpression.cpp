@@ -12,39 +12,26 @@ const ushort HAS_BOTH = HAS_NOT | HAS_ID;
 
 Disjunction::Disjunction() {
     active = true;
-    idsMap = new bool[varsCount+1];
-    notsMap = new bool[varsCount+1];
+    varsMap = (new bool[varsCount*2+1]) + varsCount;
 
     for (int i=1; i<=varsCount; i++) {
-        idsMap[i] = false;
-        notsMap[i] = false;
+        varsMap[i] = false;
+        varsMap[-i] = false;
     }
 }
 
 void Disjunction::add(int var) {
     vars.insert(var);
-    if (var > 0) {
-        idsMap[var] = true;
-    } else {
-        notsMap[-var] = true;
-    }
+    varsMap[var] = true;
 }
 
 void Disjunction::remove(int var) {
     vars.erase(var);
-    if (var > 0) {
-        idsMap[var] = false;
-    } else {
-        notsMap[-var] = false;
-    }
+    varsMap[var] = false;
 }
 
 bool Disjunction::has(int var) {
-    if (var > 0) {
-        return idsMap[var];
-    } else {
-        return notsMap[-var];
-    }
+    return varsMap[var];
 }
 
 bool Disjunction::empty() {
