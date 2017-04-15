@@ -4,7 +4,7 @@ for f in fixtures/aim-{200,100,50}*.cnf
 do
 	if [[ $f == *"yes"* ]]; then
 		if [[ $(./dpll $f) == *"UNSATISFIABLE"* ]]; then
-			echo "NO"
+			echo "NOOOOOOOOOOOOOOOO"
 		else
 			echo "YES"
 		fi
@@ -12,7 +12,7 @@ do
 		if [[ $(./dpll $f) == *"UNSATISFIABLE"* ]]; then
 			echo "YES"
 		else
-			echo "NO"
+			echo "NOOOOOOOOOOOOOOOO"
 		fi
 	fi
 

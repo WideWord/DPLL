@@ -7,6 +7,8 @@
 class Disjunction {
 public:
 	std::unordered_set<int> vars;
+	bool* idsMap;
+	bool* notsMap;
 	bool active;
 
 	void add(int);

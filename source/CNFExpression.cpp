@@ -3,20 +3,48 @@
 #include <sstream>
 #include <iostream>
 
- Disjunction::Disjunction() {
+int varsCount;
+
+const ushort HAS_NONE = 0;
+const ushort HAS_ID = 1;
+const ushort HAS_NOT = 2;
+const ushort HAS_BOTH = HAS_NOT | HAS_ID;
+
+Disjunction::Disjunction() {
     active = true;
+    idsMap = new bool[varsCount+1];
+    notsMap = new bool[varsCount+1];
+
+    for (int i=1; i<=varsCount; i++) {
+        idsMap[i] = false;
+        notsMap[i] = false;
+    }
 }
 
 void Disjunction::add(int var) {
     vars.insert(var);
+    if (var > 0) {
+        idsMap[var] = true;
+    } else {
+        notsMap[-var] = true;
+    }
 }
 
 void Disjunction::remove(int var) {
     vars.erase(var);
+    if (var > 0) {
+        idsMap[var] = false;
+    } else {
+        notsMap[-var] = false;
+    }
 }
 
 bool Disjunction::has(int var) {
-    return vars.find(var) != vars.end();
+    if (var > 0) {
+        return idsMap[var];
+    } else {
+        return notsMap[-var];
+    }
 }
 
 bool Disjunction::empty() {
@@ -45,14 +73,7 @@ int CNFExpression::getVarToTest() {
     return 0;
 }
 
-const ushort HAS_NONE = 0;
-const ushort HAS_ID = 1;
-const ushort HAS_NOT = 2;
-const ushort HAS_BOTH = HAS_NOT | HAS_ID;
-
-
 ushort *varsPurity;
-int varsCount;
 
 int CNFExpression::getPureVar() {
     for (uint i=1 ; i<=varsCount ; i++) {
